@@ -1,0 +1,153 @@
+body {
+    background: url(image/back.jpg);
+}
+
+form {
+    width: 90%;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #ffffff;
+    background-image: url(image/form.jpg);
+    border-radius: 10px;
+    box-shadow: 0 0 10px #cccccc;
+	font-size: 19px;
+}
+
+fieldset {
+    margin: 10px;
+    padding: 10px;
+    border: 2px solid #34495e;
+    border-radius: 10px;
+}
+
+fieldset legend {
+	font-size: 23px;
+	font-style: italic;
+    color: #34495e;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+input,
+select,
+output,
+textarea {
+    width: 95%;
+	box-sizing:content-box;
+	height: 18px;
+    margin: 0 0 10px 0;
+    padding: 2px 5px;
+    border: 1px solid #cccccc;
+    border-radius: 5px;
+    vertical-align: middle;
+}
+
+output {
+    display: inline-block;
+    width: 30px;
+    height: 20px;
+    margin: 0 5px 10px 0;
+    text-align: center;
+}
+
+input[type="submit"],
+input[type="reset"] { 
+    display: inline-block;
+    width: auto;
+    height: auto;
+    margin: 0 5px;
+    padding: 6px 15px;
+    color: #ffffff;
+    background: #2c3e50;
+    border: none;
+    border-radius: 5px;
+}
+
+input[disabled] {
+    background-color: #ebebe3;
+}
+
+table {
+	overflow: hidden;
+    border-radius: 10px;
+}
+
+
+.one-third-width {
+    width: 33.3%;
+}
+
+.two-third-width {
+    width: 66.6%;
+}
+
+.half-width {
+    width: 50%;
+}
+
+.one-third-width,
+.two-third-width, 
+.half-width {
+    display: inline-block;
+    margin-right: -4px;
+}
+
+.one-third-width input,
+.two-third-width select {
+    width: 80%;
+}
+
+.half-width input,
+.half-width select {
+    width: 80%;
+}
+
+.half-width input[type="range"] {
+	-webkit-appearance: none;
+	width: 60%;
+	border-radius: 5px;
+	height: 3px;
+	border: 1px solid #bdc3c7;
+	background-color: #fff; 
+}
+}
+
+.output-area {
+    vertical-align: top;
+}
+
+.buttons {
+    margin-top: 10px;
+    text-align: center;
+}
+
+body {
+    min-width: 553px;
+}
+
+main {
+    min-height: 400px;
+}
+input[type='checkbox'],
+input[type='radio'] {
+   opacity: 1;
+   filter: alpha(opacity=0);
+   width: 13px;
+   height: 13px;
+   z-index: 99999;
+   position: relative;
+   cursor: pointer;
+}
+input[type='date'] {
+   opacity: 1;
+   filter: alpha(opacity=0);
+   height: 16px;
+   z-index: 99999;
+   position: relative;
+   cursor: pointer;
+}
+
+
