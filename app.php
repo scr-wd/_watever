@@ -128,7 +128,7 @@ $selectedstates=$selectedstateQuery
 						
 						
 						<div class="half-width">
-							<label for="id">Агентство</label>
+							<label for="id">Агентство / Программа</label>
 						</div>
 						<div class="half-width">
 							<select name='agencySelector'>
