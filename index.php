@@ -39,10 +39,12 @@ else
 //для полей Агентство/Программа
 $selectedagencyQuery = $db
 	->prepare('
-		SELECT * FROM `program` INNER JOIN `agency` ON `agency`.`agency_id` = `program`.`agency_id` WHERE `program_id` = '.$Program.'
+		SELECT * FROM `program` INNER JOIN `agency` ON `agency`.`agency_id` = `program`.`agency_id` WHERE `program_id` = :program
 	');
 $selectedagencyQuery
-	->execute();
+	->execute(
+	['program' => $Program]
+	);
 $selectedagencies=$selectedagencyQuery
 	->fetchAll(PDO::FETCH_ASSOC);
 
@@ -68,10 +70,12 @@ else
 //для полей с Городом
 $selectedvisaQuery =$db
 	->prepare('
-		SELECT * FROM `visa` WHERE `visa_id` = '.$Visa.'
+		SELECT * FROM `visa` WHERE `visa_id` = :visa
 	');
 $selectedvisaQuery
-	->execute();
+	->execute(
+	['visa' => $Visa]
+	);
 $selectedvisum=$selectedvisaQuery
 	->fetchAll(PDO::FETCH_ASSOC);
 
@@ -97,10 +101,12 @@ else
 //для полей со Штатом
 $selectedstateQuery =$db
 	->prepare('
-		SELECT * FROM `state` WHERE `state_id` = '.$State.'
+		SELECT * FROM `state` WHERE `state_id` = :state
 	');
 $selectedstateQuery
-	->execute();
+	->execute(
+	['state' => $State]
+	);
 $selectedstates=$selectedstateQuery
 	->fetchAll(PDO::FETCH_ASSOC);
 
@@ -119,8 +125,11 @@ $selectedstates=$selectedstateQuery
 		Подробнее об источниках вы можете прочесть <a href='#bottom'>ниже</a>.</h5>
 		</header>
         <main>
-          <form action="app.php" method="GET">
+          <form action="index.php" method="GET">
 				
+				<div>
+				<h4>Форма заполнена среднестатистическими данными участников.<br>Для расчета затрат и доходов вы можете изменить поля после чего нажать кнопку "Пересчитать" в конце формы.</h4>
+				</div>
 				
 				<div class="half-width">
 					<fieldset>
@@ -133,7 +142,7 @@ $selectedstates=$selectedstateQuery
 						<div class="half-width">
 							<select name='agencySelector'>
 								<?php foreach ($agencies as $agency) { ?>
-								<option <?if(isset($_GET['agencySelector']) and htmlspecialchars($agency['program_id']) == $_GET['agencySelector']):?> selected='selected' <?endif?> value='<?=htmlspecialchars($agency['program_id']);?>'><?=htmlspecialchars ($agency['sponsor']).' / '.htmlspecialchars($agency['name'])?></option>
+								<option <?php if(isset($_GET['agencySelector']) and htmlspecialchars($agency['program_id']) == $_GET['agencySelector']):?> selected='selected' <?php endif?> value='<?=htmlspecialchars($agency['program_id']);?>'><?=htmlspecialchars ($agency['sponsor']).' / '.htmlspecialchars($agency['name'])?></option>
 								<?php } ?>
 							</select>
 						</div>
@@ -144,7 +153,7 @@ $selectedstates=$selectedstateQuery
 							<label for="id">Базовая стоимость</label>
 						</div>
 						<div class="half-width">
-							<input type="text" name="program_base_cost" title= "Базовая стоимость выбранного варианта программы" value='<?
+							<input type="text" name="program_base_cost" title= "Базовая стоимость выбранного варианта программы" value='<?php
 							foreach ($selectedagencies as $selectedagency) {};
 							$ProgramCost = htmlspecialchars($selectedagency['base_cost']);
 							print (number_format($ProgramCost, 0, ',', ' ').' руб.');
@@ -155,7 +164,7 @@ $selectedstates=$selectedstateQuery
 							<label for="id">Регистрационный взнос</label>
 						</div>
 						<div class="half-width">
-							<input type="text" name="agency_registration_fee" title= "Регистрационный взнос агентства" value='<?
+							<input type="text" name="agency_registration_fee" title= "Регистрационный взнос агентства" value='<?php
 							foreach ($selectedagencies as $selectedagency) {};
 							$AgencyRegistrationFee = htmlspecialchars($selectedagency['registration_fee']);
 							print (number_format($AgencyRegistrationFee, 0, ',', ' ').' руб.');
@@ -166,7 +175,7 @@ $selectedstates=$selectedstateQuery
 							<label for="id">Поиск работы</label>
 						</div>
 						<div class="half-width">
-							<input type="text" name="agency_working_fee" title= "Стоимость поиска работ агентством" value='<?
+							<input type="text" name="agency_working_fee" title= "Стоимость поиска работ агентством" value='<?php
 							$AgencyWorkingFee = htmlspecialchars($selectedagency['working_fee']);
 							print (number_format($AgencyWorkingFee, 0, ',', ' ').' руб.');
 							?>' disabled>
@@ -176,7 +185,7 @@ $selectedstates=$selectedstateQuery
 							<label for="id">Дополнительные услуги</label>
 						</div>
 						<div class="half-width">
-							<input type="text" name="agency_additional_fee" title= "Стоимость дополнительных услуг агентства" value='<?
+							<input type="text" name="agency_additional_fee" title= "Стоимость дополнительных услуг агентства" value='<?php
 							$AgencyAdditionalFee = htmlspecialchars($selectedagency['additional_fee']);
 							print (number_format($AgencyAdditionalFee, 0, ',', ' ').' руб.');
 							?>' disabled>
@@ -186,7 +195,7 @@ $selectedstates=$selectedstateQuery
 							<label for="id">Депозит</label>
 						</div>
 						<div class="half-width">
-							<input type="text" name="agency_deposit_fee" title= "Возвращаемый депозит агентству" value='<?
+							<input type="text" name="agency_deposit_fee" title= "Возвращаемый депозит агентству" value='<?php
 							$AgencyDepositFee = htmlspecialchars($selectedagency['deposit_fee']);
 							print (number_format($AgencyDepositFee, 0, ',', ' ').' руб.');
 							?>' disabled>
@@ -205,7 +214,7 @@ $selectedstates=$selectedstateQuery
 								<?php
 								$AgencyTotal = $ProgramCost + $AgencyRegistrationFee + $AgencyWorkingFee + $AgencyAdditionalFee + $AgencyDepositFee;
 								?>
-								<input type="text" name="" title= "Итог по затратам, связанным с агентством" value='<?php print (number_format($AgencyTotal, 0, ',', ' ').' руб.'); ?>' disabled>
+								<input type="text" name="" title="Итог по затратам, связанным с агентством" value='<?php print (number_format($AgencyTotal, 0, ',', ' ').' руб.'); ?>' disabled>
 							</div>
 						</div>
 						
@@ -225,7 +234,7 @@ $selectedstates=$selectedstateQuery
 							<label for="id">Консульский сбор</label>
 						</div>
 						<div class="two-third-width">
-							<input type="text" name="visa_consular_fee" title= "Стоимость консульского сбора" value='<?
+							<input type="text" name="visa_consular_fee" title= "Стоимость консульского сбора" value='<?php
 							$VisaConsularFee = htmlspecialchars($selectedagency['consular_fee']);
 							print number_format($VisaConsularFee, 0, ',', ' ').' руб.';
 							?>' disabled>
@@ -237,13 +246,13 @@ $selectedstates=$selectedstateQuery
 						<div class="one-third-width">
 							<select name='visaSelector'>
 								<?php foreach ($visum as $visa) { ?>
-								<option <?if(isset($_GET['visaSelector']) and htmlspecialchars($visa['visa_id']) == $_GET['visaSelector']):?> selected='selected' <?endif?> value='<?=htmlspecialchars($visa['visa_id'])?>'><?=htmlspecialchars($visa['name_of_city'])?></option>
+								<option <?php if(isset($_GET['visaSelector']) and htmlspecialchars($visa['visa_id']) == $_GET['visaSelector']):?> selected='selected' <?php endif?> value='<?=htmlspecialchars($visa['visa_id'])?>'><?=htmlspecialchars($visa['name_of_city'])?></option>
 								<?php } ?>
 							</select>
 						</div>
 						<div class="one-third-width">
 							<div class="one-third-width">
-								<input type="number" name="visa_period" value="<?
+								<label><nobr><input type="number" name="visa_period" value="<?php
 								if (isset($_GET['visa_period'])) {
 									$VisaPeriod = $_GET['visa_period'];
 								}
@@ -252,7 +261,7 @@ $selectedstates=$selectedstateQuery
 									$VisaPeriod = 2;
 								}
 								print $VisaPeriod;
-								?>" title= "Количество дней проживания в городе">
+								?>" title= "Количество дней проживания в городе"> дня</nobr></label>
 							</div>
 						</div>
 
@@ -268,7 +277,7 @@ $selectedstates=$selectedstateQuery
 							</select>
 						</div>
 						<div class="one-third-width">
-							<input type="text" name="visa_tansfer" title= "Стоимость трансфера" value='<?
+							<input type="text" name="visa_tansfer" title= "Стоимость трансфера" value='<?php
 							foreach ($selectedvisum as $selectedvisa) {};
 							$VisaTansfer = htmlspecialchars($selectedvisa['trans_avia']);
 							print number_format($VisaTansfer, 0, ',', ' ').' руб.';
@@ -279,7 +288,7 @@ $selectedstates=$selectedstateQuery
 							<label for="id">Жилье</label>
 						</div>
 						<div class="one-third-width">
-							<input type="text" name="visa_housing" title= "Стоимость аренды за день" value='<?
+							<input type="text" name="visa_housing" title= "Стоимость аренды за день" value='<?php
 							$VisaHousing = htmlspecialchars($selectedvisa['housing']);
 							print number_format($VisaHousing, 0, ',', ' ').' руб.';
 							?>' disabled>
@@ -292,7 +301,7 @@ $selectedstates=$selectedstateQuery
 							<label for="id">Питание</label>
 						</div>
 						<div class="one-third-width">
-							<input type="text" name="visa_meal" title= "Стоимость питания за день" value='<?
+							<input type="text" name="visa_meal" title= "Стоимость питания за день" value='<?php
 							$VisaMeal = htmlspecialchars($selectedvisa['meal']);
 							print number_format($VisaMeal, 0, ',', ' ').' руб.';
 							?>' disabled>
@@ -305,7 +314,7 @@ $selectedstates=$selectedstateQuery
 							<label for="id">Остальное</label>
 						</div>
 						<div class="one-third-width">
-							<input type="text" name="visa_living" title= "Включает дополнительные затраты на проживание (транспорт, развлечения и др.)" value='<?
+							<input type="text" name="visa_living" title= "Включает дополнительные затраты на проживание (транспорт, развлечения и др.)" value='<?php
 							$VisaLiving = htmlspecialchars($selectedvisa['living']);
 							print number_format($VisaLiving, 0, ',', ' ').' руб.';?>' disabled>
 						</div>
@@ -389,7 +398,7 @@ $selectedstates=$selectedstateQuery
 							<label for="id">Пребывание</label>
 						</div>
 						<div class="one-third-width">
-							<input type="text" name="state_period" title= "Количество дней проживания в штатах" value='<?
+							<input type="text" name="state_period" title= "Количество дней проживания в штатах" value='<?php
 							$StatePeriod = (intval(abs(strtotime($Date2) - strtotime($Date1))) / (3600*24) );
 							print $StatePeriod;
 							?>' disabled>
@@ -403,7 +412,7 @@ $selectedstates=$selectedstateQuery
 						<div class="two-third-width">
 							<select name='stateSelector'>
 								<?php foreach ($states as $state) { ?>
-								<option <?if(isset($_GET['stateSelector']) and htmlspecialchars($state['state_id']) == $_GET['stateSelector']):?> selected='selected' <?endif?> value='<?=htmlspecialchars($state['state_id']);?>'><?=htmlspecialchars($state['name'])?></option>
+								<option <?php if(isset($_GET['stateSelector']) and htmlspecialchars($state['state_id']) == $_GET['stateSelector']):?> selected='selected' <?php endif?> value='<?=htmlspecialchars($state['state_id']);?>'><?=htmlspecialchars($state['name'])?></option>
 								<?php } ?>
 							</select>
 						</div>
@@ -413,7 +422,7 @@ $selectedstates=$selectedstateQuery
 							<label for="id">Перелет</label>
 						</div>
 						<div class="two-third-width">
-							<input type="text" name="state_flight" title= "Стоимость затрат на перелет в оба конца" value='<?
+							<input type="text" name="state_flight" title= "Стоимость затрат на перелет в оба конца" value='<?php
 							foreach ($selectedstates as $selectedstate) {};
 							$StateFlight = htmlspecialchars($selectedstate['flight']);
 							print number_format($StateFlight, 0, ',', ' ').' руб.';
@@ -425,7 +434,7 @@ $selectedstates=$selectedstateQuery
 							<label for="id">Трансфер</label>
 						</div>
 						<div class="one-third-width">
-							<input type="text" name="state_transfer" title= "Стоимость затрат на трансфер туда и обратно" value='<?
+							<input type="text" name="state_transfer" title= "Стоимость затрат на трансфер туда и обратно" value='<?php
 							$StateTransfer = htmlspecialchars($selectedstate['transfer']);
 							print number_format($StateTransfer, 0, ',', ' ').' руб.';
 							?>' disabled>
@@ -437,7 +446,7 @@ $selectedstates=$selectedstateQuery
 							<label for="id">Жилье</label>
 						</div>
 						<div class="one-third-width">
-							<input type="text" name="state_housing" title= "Стоимость жилья за месяц" value='<?
+							<input type="text" name="state_housing" title= "Стоимость жилья за месяц" value='<?php
 							$StateHousing = htmlspecialchars($selectedstate['housing']);
 							print number_format($StateHousing, 0, ',', ' ').' руб.';
 							?>' disabled>
@@ -448,7 +457,7 @@ $selectedstates=$selectedstateQuery
 							<label for="id">Питание</label>
 						</div>
 						<div class="one-third-width">
-							<input type="text" name="state_meal" title= "Затраты на питание на один день" value='<?
+							<input type="text" name="state_meal" title= "Затраты на питание на один день" value='<?php
 							$StateMeal = htmlspecialchars($selectedstate['meal']);
 							print number_format($StateMeal, 0, ',', ' ').' руб.';
 							?>' disabled>
@@ -462,7 +471,7 @@ $selectedstates=$selectedstateQuery
 							<label for="id">Развлечения</label>
 						</div>
 						<div class="one-third-width">
-							<input type="text" name="state_entertainment" title= "Средние затраты на отдых и развлечения в штате в месяц" value='<?
+							<input type="text" name="state_entertainment" title= "Средние затраты на отдых и развлечения в штате в месяц" value='<?php
 							$StateEntertainment = htmlspecialchars($selectedstate['entertainment']);
 							print number_format($StateEntertainment, 0, ',', ' ').' руб.';
 							?>' disabled>
@@ -473,7 +482,7 @@ $selectedstates=$selectedstateQuery
 							<label for="id">Другое</label>
 						</div>
 						<div class="one-third-width">
-							<input type="text" name="state_living" title= "Бытовые затраты в месяц" value='<?
+							<input type="text" name="state_living" title= "Бытовые затраты в месяц" value='<?php
 							$StateLiving = htmlspecialchars($selectedstate['living']);
 							print number_format($StateLiving, 0, ',', ' ').' руб.';
 							?>' disabled>
@@ -494,7 +503,7 @@ $selectedstates=$selectedstateQuery
 							<label for="id">Сумма на первое время</label>
 						</div>
 						<div class="half-width">
-							<input type="number" name="money_with" value="<?
+							<input type="number" name="money_with" value="<?php
 							if (isset($_GET['money_with'])) {
 								$MoneyWith = ($_GET['money_with']);
 							}
@@ -521,7 +530,7 @@ $selectedstates=$selectedstateQuery
 							<label for="id">Итого:</label>
 							</div>
 							<div class="half-width">
-								<?
+								<?php
 								$StateTotal = $StateFlight + $StateTransfer + ($StateMeal * $StatePeriod) + (($StateHousing + $StateEntertainment + $StateLiving) * (round(($StatePeriod/30), 0, PHP_ROUND_HALF_UP)));
 								?>
 								<input type="text" name="" title= "Итог по затратам, связанным с поездкой за визой" value='<?=number_format($StateTotal, 0, ',', ' ').' руб.'?>' disabled>
@@ -563,7 +572,7 @@ $selectedstates=$selectedstateQuery
 									</td>
 									<td>
 										<label style="margin-bottom: 0px; margin-top: 5px;" align="center">
-											<input type="number" name="salary1" style="width: 40px;" value="<?
+											<input type="number" name="salary1" style="width: 40px;" value="<?php
 											if (isset($_GET['salary1'])) {
 												$Salary1 = $_GET['salary1'];
 											}
@@ -577,7 +586,7 @@ $selectedstates=$selectedstateQuery
 									</td>
 									<td>
 										<label style="margin-bottom: 0px; margin-top: 5px;" align="center">
-											<input type="number" name="worktime1" style="width: 40px;" value='<?
+											<input type="number" name="worktime1" style="width: 40px;" value='<?php
 											if (isset($_GET['worktime1'])) {
 												$WorkTime1 = $_GET['worktime1'];
 											}
@@ -602,7 +611,7 @@ $selectedstates=$selectedstateQuery
 									</td>
 									<td>
 										<label style="margin-bottom: 0px; margin-top: 5px;" align="center">
-											<input type="number" name="salary2" style="width: 40px;" value="<?
+											<input type="number" name="salary2" style="width: 40px;" value="<?php
 											if (isset($_GET['salary2'])) {
 												$Salary2 = $_GET['salary2'];
 											}
@@ -616,7 +625,7 @@ $selectedstates=$selectedstateQuery
 									</td>
 									<td>
 										<label style="margin-bottom: 0px; margin-top: 5px;" align="center">
-											<input type="number" name="worktime2" style="width: 40px;" value='<?
+											<input type="number" name="worktime2" style="width: 40px;" value='<?php
 											if (isset($_GET['worktime2'])) {
 												$WorkTime2 = $_GET['worktime2'];
 											}
@@ -657,7 +666,7 @@ $selectedstates=$selectedstateQuery
 								<label for="id">Итого:</label>
 								</div>
 								<div class="half-width">
-									<?
+									<?php
 									$WorkTotal = (($Salary1 * $WorkTime1 + $Salary2 * $WorkTime2) * (round(($StatePeriod/7), 0, PHP_ROUND_HALF_UP)));
 									?>
 									<input type="text" name="" title= "Итог по затратам, связанным с поездкой за визой" value='<?=number_format($WorkTotal, 0, ',', ' ').' руб.'?>' disabled>
@@ -682,7 +691,7 @@ $selectedstates=$selectedstateQuery
 							<label for="id">Сумма расходов до поездки</label>
 						</div>
 						<div class="half-width">
-							<input type="text" name="expenses_before" value="<?
+							<input type="text" name="expenses_before" value="<?php
 							$ExpensesBefore = $AgencyTotal + $VisaTotal + $StateFlight + $MoneyWith;
 							print number_format($ExpensesBefore, 0, ',', ' ').' руб.';
 							?>" disabled>
@@ -692,7 +701,7 @@ $selectedstates=$selectedstateQuery
 							<label for="id">Общая сумма расходов</label>
 						</div>
 						<div class="half-width">
-							<input type="text" name="expenses_total" value="<?
+							<input type="text" name="expenses_total" value="<?php
 							$ExpensesTotal = $ExpensesBefore + $StateTotal - $StateFlight;
 							print number_format($ExpensesTotal, 0, ',', ' ').' руб.';
 							?>" disabled>
@@ -702,7 +711,7 @@ $selectedstates=$selectedstateQuery
 							<label for="id">Общая сумма доходов</label>
 						</div>
 						<div class="half-width">
-							<input type="text" name="revenue_total" value="<?
+							<input type="text" name="revenue_total" value="<?php
 							$RevenueTotal = $WorkTotal;
 							print number_format($RevenueTotal, 0, ',', ' ').' руб.';
 							?>" disabled>
@@ -712,7 +721,7 @@ $selectedstates=$selectedstateQuery
 							<label for="id">Прибыль</label>
 						</div>
 						<div class="half-width">
-							<input type="text" name="income_total" value="<?
+							<input type="text" name="income_total" value="<?php
 							$IncomeTotal = $RevenueTotal - $ExpensesTotal;
 							print number_format($IncomeTotal, 0, ',', ' ').' руб.';
 							?>" disabled>
