@@ -1,7 +1,6 @@
 <?php header("Content-Type: text/html; charset=utf-8");
 date_default_timezone_set('Asia/Novosibirsk');
 setlocale(LC_MONETARY, 'ru_RU');?>
-<!DOCTYPE html>
 <html>
     <head>
         <title>Калькулятор W&T Program</title>
